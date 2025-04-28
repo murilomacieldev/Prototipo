@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Objetivos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Gothic+Condensed+One&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h1>PROTOTIPO</h1>
+        </div>
+        <div class="points-dashboard">
+            <div class="points-container">
+                <i class="fas fa-star gamification-icon" title="Pontos"></i>
+                <span class="points-label">Pontos:</span>
+                <span id="points-value">0</span>
+                <div id="points-animation" class="points-animation"></div>
+            </div>
+            
+            <div class="level-container">
+                <i class="fas fa-medal gamification-icon" title="Nível"></i>
+                <span class="level-label">Nível:</span>
+                <span id="level-value">1</span>
+                <div class="progress-bar">
+                    <div id="level-progress" class="progress"></div>
+                </div>
+            </div>
+            <div class="achievements-container">
+                <i class="fas fa-trophy gamification-icon" title="Conquistas"></i>
+                <span class="achievements-label">Conquistas:</span>
+                <span id="achievements-value">0</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button id="help-btn" class="help-btn"><i class="fas fa-question-circle"></i> Ajuda</button>
+            <div class="dropdown">
+                <button class="dropdown-btn"><i class="fas fa-cog"></i> Opções</button>
+                <div class="dropdown-content">
+                    <a href="#" id="save-data">Salvar Dados</a>
+                    <a href="#" id="import-data">Importar Dados</a>
+                    <a href="#" id="reset-data">Resetar Dados</a>
+                </div>
+            </div>
+        </div>
+        
+    </nav>
+    
+    <div class="container">
+        <h1 class="h1t">Objetivos/Metas</h1>
+ 
+<!-- Modificar a navegação de tabs para incluir a aba de excluídos e conquistas -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="active">Ativos</button>
+        <button class="tab-btn" data-tab="completed">Concluídos</button>
+        <button class="tab-btn" data-tab="deleted">Excluídos</button>
+        <button class="tab-btn" data-tab="achievements">Conquistas</button>
+    </div>
+
+        <div class="filter-sort">
+            <div class="filter">
+                <label for="filter-priority">Filtrar por:</label>
+                <select id="filter-priority">
+                    <option value="all">Todos</option>
+                    <option value="high">Alta Prioridade</option>
+                    <option value="medium">Média Prioridade</option>
+                    <option value="low">Baixa Prioridade</option>
+                </select>
+            </div>
+            <div class="sort">
+                <label for="sort-by">Ordenar por:</label>
+                <select id="sort-by">
+                    <option value="deadline">Prazo</option>
+                    <option value="priority">Prioridade</option>
+                    <option value="created">Data de Criação</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="active-tab" class="tab-content active">
+            <div class="objectives-grid" id="objectives-container"></div>
+        </div>
+
+        <div id="completed-tab" class="tab-content">
+            <div class="objectives-grid" id="completed-container"></div>
+        </div>
+        <div id="deleted-tab" class="tab-content">
+            <div class="objectives-grid" id="deleted-container"></div>
+        </div>
+        
+        <div id="achievements-tab" class="tab-content">
+            <div class="achievements-grid" id="achievements-container"></div>
+        </div>
+        <button id="add-objective-btn" class="add-btn">
+            <i class="fas fa-plus"></i> 
+        </button>
+    </div>
+
+    <!-- Modal para adicionar/editar objetivos -->
+    <div id="objective-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Adicionar Novo Objetivo</h2>
+            <form id="objective-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="objective-title">Título:</label>
+                    <input type="text" id="objective-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="objective-description">Descrição:</label>
+                    <textarea id="objective-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="objective-timer-type">Tipo de Cronômetro:</label>
+                    <select id="objective-timer-type">
+                        <option value="progressive">Progressivo (Contagem de tempo)</option>
+                        <option value="countdown">Regressivo (Até o prazo)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="objective-deadline">Prazo:</label>
+                    <input type="datetime-local" id="objective-deadline">
+                </div>
+                <div class="form-group">
+                    <label for="objective-priority">Prioridade:</label>
+                    <select id="objective-priority">
+                        <option value="low">Baixa</option>
+                        <option value="medium" selected>Média</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="objective-estimated-time">Tempo Estimado (minutos):</label>
+                    <input type="number" id="objective-estimated-time" min="1" value="30">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Salvar</button>
+                    <button type="button" class="cancel-btn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de ajuda -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content help-content">
+            <span class="close">&times;</span>
+            <h2>Como Usar o Sistema de Objetivos</h2>
+            <div class="help-section">
+                <h3>Gerenciamento de Objetivos</h3>
+                <ul>
+                    <li><strong>Adicionar Objetivo:</strong> Clique no botão "+" para criar um novo objetivo.</li>
+                    <li><strong>Editar Objetivo:</strong> Clique no ícone de lápis em um objetivo para modificá-lo.</li>
+                    <li><strong>Excluir Objetivo:</strong> Clique no ícone de lixeira para remover um objetivo.</li>
+                    <li><strong>Concluir Objetivo:</strong> Marque a caixa de seleção quando completar um objetivo.</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Temporizador</h3>
+                <ul>
+                    <li><strong>Iniciar/Pausar:</strong> Clique no botão de play/pause para controlar o temporizador.</li>
+                    <li><strong>Resetar:</strong> Clique no botão de reset para zerar o temporizador.</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Sistema de Pontos</h3>
+                <ul>
+                    <li><strong>Pontos por Prioridade:</strong>
+                        <ul>
+                            <li>Alta: 30 pontos</li>
+                            <li>Média: 20 pontos</li>
+                            <li>Baixa: 10 pontos</li>
+                        </ul>
+                    </li>
+                    <li><strong>Níveis:</strong> A cada 100 pontos você sobe de nível.</li>
+                    <li><strong>Conquistas:</strong> Desbloqueie conquistas completando objetivos.</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Dicas</h3>
+                <ul>
+                    <li>Use a função de filtro e ordenação para organizar seus objetivos.</li>
+                    <li>Defina prazos realistas para melhorar sua produtividade.</li>
+                    <li>Salve seus dados regularmente usando o menu de opções.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de conquistas -->
+    <div id="achievement-modal" class="modal">
+        <div class="modal-content achievement-content">
+            <span class="close">&times;</span>
+            <h2>Conquista Desbloqueada!</h2>
+            <div id="achievement-details">
+                <div id="achievement-icon"><i class="fas fa-trophy"></i></div>
+                <h3 id="achievement-title">Título da Conquista</h3>
+                <p id="achievement-description">Descrição da conquista aqui.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificação de nível -->
+    <div id="level-up-notification" class="notification">
+        <div class="notification-content">
+            <h3>Nível Aumentado!</h3>
+            <p>Você alcançou o nível <span id="new-level">2</span>!</p>
+        </div>
+    </div>
+
+    <!-- Notificação de exportação de dados -->
+    <div id="export-notification" class="notification">
+        <div class="notification-content">
+            <h3>Dados Exportados</h3>
+            <p>Seus dados foram salvos com sucesso!</p>
+        </div>
+    </div>
+
+    <!-- Área para importar dados -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Importar Dados</h2>
+            <p>Cole seus dados salvos abaixo:</p>
+            <textarea id="import-data-text" rows="10"></textarea>
+            <div class="form-actions">
+                <button id="import-confirm-btn" class="save-btn">Importar</button>
+                <button class="cancel-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação de reset -->
+    <div id="reset-confirm-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirmar Reset</h2>
+            <p>Tem certeza que deseja resetar todos os dados? Esta ação não pode ser desfeita.</p>
+            <div class="form-actions">
+                <button id="reset-confirm-btn" class="delete-btn">Sim, Resetar</button>
+                <button class="cancel-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
